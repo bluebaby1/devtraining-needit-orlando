@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_fix">
+    <sys_script_fix action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <before>false</before>
+        <description>Get IP address</description>
+        <flush_cache>false</flush_cache>
+        <name>Get IP address test</name>
+        <record_for_rollback>false</record_for_rollback>
+        <run_once>true</run_once>
+        <script><![CDATA[try {
+    var r = new sn_ws.RESTMessageV2('x_58872_needit.IPInfo', 'GetIPInfo');
+    r.setStringParameterNoEscape('specific_field', 'geo');
+    r.setStringParameterNoEscape('ipaddress', '8.8.8.8');
+
+    //override authentication profile 
+    //authentication type ='basic'/ 'oauth2'
+    //r.setAuthenticationProfile(authentication type, profile name);
+
+    //set a MID server name if one wants to run the message on MID
+    //r.setMIDServer('MY_MID_SERVER');
+
+    //if the message is configured to communicate through ECC queue, either
+    //by setting a MID server or calling executeAsync, one needs to set skip_sensor
+    //to true. Otherwise, one may get an intermittent error that the response body is null
+    //r.setEccParameter('skip_sensor', true);
+
+    var response = r.execute();
+    var responseBody = response.getBody();
+    var httpStatus = response.getStatusCode();
+
+    //Convert the JSON formatted string to a Javascript object
+    var responseObj = JSON.parse(responseBody);
+    //Set the value of the city field on the IPaddressInfo record
+    //     current.city = responseObj.city;
+    //     gs.info("City = " + current.city);
+    //     current.insert();
+    var tempIpAddress = new GlideRecord('x_58872_needit_ipaddressinfo');
+    tempIpAddress.ip_address = responseObj.ip_address;
+    tempIpAddress.city = responseObj.city;
+    tempIpAddress.ip_address = '172.168.0.2';
+    //tempIpAddress.city = 'HongKong';	
+    tempIpAddress.insert();
+} catch (ex) {
+    var message = ex.message;
+
+}
+]]></script>
+        <sys_class_name>sys_script_fix</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2020-04-23 09:24:43</sys_created_on>
+        <sys_id>045e9b52db1410101f581780399619e3</sys_id>
+        <sys_mod_count>8</sys_mod_count>
+        <sys_name>Get IP address test</sys_name>
+        <sys_package display_value="NeedIt" source="x_58872_needit">6ead8e780f603200cd674f8ce1050ed1</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="NeedIt">6ead8e780f603200cd674f8ce1050ed1</sys_scope>
+        <sys_update_name>sys_script_fix_045e9b52db1410101f581780399619e3</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2020-04-23 11:55:34</sys_updated_on>
+        <unloadable>false</unloadable>
+    </sys_script_fix>
+</record_update>
